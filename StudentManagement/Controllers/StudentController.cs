@@ -77,7 +77,7 @@ namespace StudentManagement.Controllers
 				.Include(s => s.enrollments)
 				.ThenInclude(e => e.course)
 				.AsNoTracking()
-				.FirstOrDefaultAsync(m => m.sudentId == id);
+				.FirstOrDefaultAsync(m => m.id == id);
 			if (student == null)
 			{
 				return NotFound();
@@ -144,7 +144,7 @@ namespace StudentManagement.Controllers
 				return NotFound();
 			}
 			var studentToUpdate = await _context.students
-				.FirstOrDefaultAsync(student => student.sudentId == id);
+				.FirstOrDefaultAsync(student => student.id == id);
 
 			if (await TryUpdateModelAsync<Student>(
 				studentToUpdate, "",
@@ -175,7 +175,7 @@ namespace StudentManagement.Controllers
 
 			var student = await _context.students
 				.AsNoTracking()
-				.FirstOrDefaultAsync(m => m.sudentId == id);
+				.FirstOrDefaultAsync(m => m.id == id);
 
 			if (student == null)
 			{
@@ -215,7 +215,7 @@ namespace StudentManagement.Controllers
 
 		private bool StudentExists(int id)
 		{
-			return _context.students.Any(e => e.sudentId == id);
+			return _context.students.Any(e => e.id == id);
 		}
 	}
 }

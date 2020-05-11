@@ -25,14 +25,67 @@ namespace StudentManagement.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("courseTitle")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
 
                     b.Property<int>("credit")
                         .HasColumnType("int");
 
+                    b.Property<int>("departmentId")
+                        .HasColumnType("int");
+
                     b.HasKey("courseId");
 
+                    b.HasIndex("departmentId");
+
                     b.ToTable("Course");
+                });
+
+            modelBuilder.Entity("StudentManagement.Models.CourseAssignment", b =>
+                {
+                    b.Property<int>("courseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("instructorId")
+                        .HasColumnType("int");
+
+                    b.HasKey("courseId", "instructorId");
+
+                    b.HasIndex("instructorId");
+
+                    b.ToTable("CourseAssignment");
+                });
+
+            modelBuilder.Entity("StudentManagement.Models.Department", b =>
+                {
+                    b.Property<int>("departmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<decimal>("budget")
+                        .HasColumnType("money");
+
+                    b.Property<string>("departName")
+                        .HasColumnType("nvarchar(40)")
+                        .HasMaxLength(40);
+
+                    b.Property<DateTime>("departStartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("instructorId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("rowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.HasKey("departmentId");
+
+                    b.HasIndex("instructorId");
+
+                    b.ToTable("Department");
                 });
 
             modelBuilder.Entity("StudentManagement.Models.Enrollment", b =>
@@ -60,27 +113,98 @@ namespace StudentManagement.Migrations
                     b.ToTable("Enrollment");
                 });
 
-            modelBuilder.Entity("StudentManagement.Models.Student", b =>
+            modelBuilder.Entity("StudentManagement.Models.OfficeAssignment", b =>
                 {
-                    b.Property<int>("sudentId")
+                    b.Property<int>("instructorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("location")
+                        .HasColumnType("nvarchar(30)")
+                        .HasMaxLength(30);
+
+                    b.HasKey("instructorId");
+
+                    b.ToTable("OfficeAssignment");
+                });
+
+            modelBuilder.Entity("StudentManagement.Models.Person", b =>
+                {
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("firstName")
+                        .IsRequired()
+                        .HasColumnName("fisrtName")
+                        .HasColumnType("nvarchar(40)")
+                        .HasMaxLength(40);
+
+                    b.Property<string>("lastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(40)")
+                        .HasMaxLength(40);
+
+                    b.HasKey("id");
+
+                    b.ToTable("Person");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Person");
+                });
+
+            modelBuilder.Entity("StudentManagement.Models.Instructor", b =>
+                {
+                    b.HasBaseType("StudentManagement.Models.Person");
+
+                    b.Property<DateTime>("hireDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasDiscriminator().HasValue("Instructor");
+                });
+
+            modelBuilder.Entity("StudentManagement.Models.Student", b =>
+                {
+                    b.HasBaseType("StudentManagement.Models.Person");
+
                     b.Property<DateTime>("dateEnrollment")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("firstName")
-                        .HasColumnType("nvarchar(20)")
-                        .HasMaxLength(20);
+                    b.HasDiscriminator().HasValue("Student");
+                });
 
-                    b.Property<string>("lastName")
-                        .HasColumnType("nvarchar(20)")
-                        .HasMaxLength(20);
+            modelBuilder.Entity("StudentManagement.Models.Course", b =>
+                {
+                    b.HasOne("StudentManagement.Models.Department", "department")
+                        .WithMany("courses")
+                        .HasForeignKey("departmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
-                    b.HasKey("sudentId");
+            modelBuilder.Entity("StudentManagement.Models.CourseAssignment", b =>
+                {
+                    b.HasOne("StudentManagement.Models.Course", "course")
+                        .WithMany("courseAssignments")
+                        .HasForeignKey("courseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.ToTable("Student");
+                    b.HasOne("StudentManagement.Models.Instructor", "instructor")
+                        .WithMany("courseAssignments")
+                        .HasForeignKey("instructorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("StudentManagement.Models.Department", b =>
+                {
+                    b.HasOne("StudentManagement.Models.Instructor", "admin")
+                        .WithMany()
+                        .HasForeignKey("instructorId");
                 });
 
             modelBuilder.Entity("StudentManagement.Models.Enrollment", b =>
@@ -94,6 +218,15 @@ namespace StudentManagement.Migrations
                     b.HasOne("StudentManagement.Models.Student", "student")
                         .WithMany("enrollments")
                         .HasForeignKey("studentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("StudentManagement.Models.OfficeAssignment", b =>
+                {
+                    b.HasOne("StudentManagement.Models.Instructor", null)
+                        .WithOne("officeAssignment")
+                        .HasForeignKey("StudentManagement.Models.OfficeAssignment", "instructorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

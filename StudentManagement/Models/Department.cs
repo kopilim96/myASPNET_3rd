@@ -15,7 +15,7 @@ namespace StudentManagement.Models
 		public string departName { get; set; }
 
 		[DataType(DataType.Currency)]
-		[Column(TypeName = "Budget")]
+		[Column(TypeName = "money")]
 		public decimal budget { get; set; }
 
 		[DataType(DataType.Date)]
@@ -24,6 +24,9 @@ namespace StudentManagement.Models
 		public DateTime departStartDate { get; set; }
 
 		public int? instructorId { get; set; }
+
+		[Timestamp]
+		public byte[] rowVersion { get; set; }
 
 		public Instructor admin { get; set; }
 		public ICollection<Course> courses { get; set; }

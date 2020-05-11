@@ -1,0 +1,106 @@
+﻿@model StudentManagement.Models.SchoolViewModel.InstructorIndexData
+
+@{
+	ViewData["Title"] = "Instructor";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+	<a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+	<thead>
+		<tr>
+			<th>Last Namae</th>
+			<th>First Name</th>
+			<th>Hire Date</th>
+			<th>Office</th>
+			<th>Course</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model.instructors)
+		{
+			string selectedRow = "";
+			if (item.id == (int?)ViewData["instructorId"])
+			{
+				selectedRow = "success";
+			}
+			<tr class="@selectedRow">
+				<td>
+					@Html.DisplayFor(modelItem => item.lastName)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.firstName)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.hireDate)
+				</td>
+				<td>
+					@if (item.officeAssignment != null)
+					{
+						@item.officeAssignment.location
+					}
+				</td>
+				<td>
+					@{
+						foreach (var course in item.courseAssignments)
+						{
+							@course.course.courseId @: @course.course.courseTitle
+							<br />
+						}
+					}
+				</td>
+				<td>
+					<a asp-action="Index" asp-route-id="@item.id">Select</a> |
+					<a asp-action="Edit" asp-route-id="@item.id">Edit</a> |
+					<a asp-action="Details" asp-route-id="@item.id">Details</a> |
+					<a asp-action="Delete" asp-route-id="@item.id">Delete</a>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+@if (Model.courses != null)
+{
+	<h3>Handle Course</h3>
+	<table class="table">
+		<tr>
+			<th>Number</th>
+			<th>Title</th>
+			<th>Department</th>
+		</tr>
+		@foreach (var item in Model.courses)
+		{
+			string selectedRow = "";
+			if (item.courseId == (int?)ViewData["courseId"])
+			{
+				selectedRow = "success";
+			}
+			<tr class="@selectedRow">
+				<td>@Html.ActionLink("Select", "Index", new { courseId = item.courseId })</td>
+				<td>@item.courseId</td>
+				<td>@item.courseTitle</td>
+				<td>@item.department.departName</td>
+			</tr>
+		}
+	</table>
+}
+
+@if (Model.enrollments != null)
+{
+	<h3>Handle Student</h3>
+	<table class="table">
+		<tr>
+			<th>Student Name</th>
+			<th>Grade</th>
+		</tr>
+		@foreach (var item in Model.enrollments)
+		{
+			<td>@item.student.fullName</td>
+			<td>@Html.DisplayFor(modelitem => item.grade)</td>
+		}
+	</table>
+}
