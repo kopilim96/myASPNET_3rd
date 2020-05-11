@@ -13,7 +13,7 @@ In this Project, there will be
 - EF using Linq to handle SQL query to db
 - Handle Concurrency (I am not good at this)
 
-*It required good understand on the logic behind and some English stuff*
+*It required good understand on the logic behind and some English stuff of course Lol*
 
 Project Data Model
 
